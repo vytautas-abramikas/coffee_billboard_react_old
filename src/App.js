@@ -52,17 +52,18 @@ class App extends Component {
   addCoffee(event){
     event.preventDefault()
     this.setState(prevState => {
-      const itemWrongId = this.state.coffeesAll.filter((item) => item.id === this.state.selected);
+      const coffeeFromMenu = this.state.coffeesAll.filter((item) => item.id === this.state.selected)
 
-      const itemToAdd = {
+      const coffeeToAdd = {
       id: this.state.choiceLength,
-      name: itemWrongId[0].name,
-      price: itemWrongId[0].price,
-      url: itemWrongId[0].url
+      name: coffeeFromMenu[0].name,
+      price: coffeeFromMenu[0].price,
+      url: coffeeFromMenu[0].url
       }
 
       const updatedList = prevState.userData
-      updatedList.push(itemToAdd)
+      updatedList.push(coffeeToAdd)
+
       return {
         userData: updatedList,
         choiceLength: updatedList.length
@@ -85,6 +86,7 @@ class App extends Component {
     const coffeePrice = this.state.userData.map(item => item.price).reduce((a, b) => a + b, 0).toFixed(2)
     const buyingList = this.state.userData.map((item, index) => 
       <MakeCoffee key={"coffee"+index} item={item} removeCoffee={this.removeCoffee} />)
+
     const optionsList = this.state.coffeesAll.map((menuItem, index) => 
       <MakeOption key={"menu"+index} item={menuItem} />)
 
@@ -105,7 +107,7 @@ class App extends Component {
           {buyingList}
         </div>
       </div>
-    );
+    )
   }
 }
 
