@@ -25,6 +25,10 @@ function MakeOption(props){
   )
 }
 
+function StoreUserData(userData){
+  localStorage.setItem("userData", JSON.stringify(userData))
+}
+
 class App extends Component {
 
   constructor() {
@@ -32,12 +36,13 @@ class App extends Component {
     this.state = {
       coffeesAll: coffeeData,
       userData: [],
-      choiceLength: 0,
+      freeId: 0,
       selected: 0
     }
     this.removeCoffee = this.removeCoffee.bind(this)
     this.selectCoffee = this.selectCoffee.bind(this)
     this.addCoffee = this.addCoffee.bind(this)
+    this.getUserData = this.getUserData.bind(this)
   }
 
   selectCoffee(event){
@@ -55,18 +60,20 @@ class App extends Component {
       const coffeeFromMenu = this.state.coffeesAll.filter((item) => item.id === this.state.selected)
 
       const coffeeToAdd = {
-      id: this.state.choiceLength,
+      id: this.state.freeId,
       name: coffeeFromMenu[0].name,
       price: coffeeFromMenu[0].price,
       url: coffeeFromMenu[0].url
       }
 
+      const usedIds = this.state.freeId
       const updatedList = prevState.userData
       updatedList.push(coffeeToAdd)
+      StoreUserData(updatedList)
 
       return {
         userData: updatedList,
-        choiceLength: updatedList.length
+        freeId: usedIds + 1
       }
     })
   }
@@ -74,15 +81,33 @@ class App extends Component {
   removeCoffee(id){
     this.setState(prevState => {
       const shortenedList = prevState.userData.filter((item) => item.id !== id)
+      StoreUserData(shortenedList)
       return {
-        userData: shortenedList,
-        choiceLength: shortenedList.length
+        userData: shortenedList
       }
     })
   }
 
+  getUserData(){
+    if (this.state.userData.length === 0){ 
+      if (localStorage.getItem("userData") !== null){
+        if (localStorage.getItem("userData").length > 2){
+          this.setState(() => {
+            const dataFromLocal = JSON.parse(localStorage.getItem("userData"))
+            return {
+              userData: dataFromLocal
+            }
+          })
+        }
+      }
+    }
+  }
+
+  componentDidMount() {
+     this.getUserData()
+  }
+
   render() {
-  
     const coffeePrice = this.state.userData.map(item => item.price).reduce((a, b) => a + b, 0).toFixed(2)
     const buyingList = this.state.userData.map((item, index) => 
       <MakeCoffee key={"coffee"+index} item={item} removeCoffee={this.removeCoffee} />)
