@@ -25,8 +25,9 @@ function MakeOption(props){
   )
 }
 
-function StoreUserData(userData){
+function StoreUserData(userData, freeId){
   localStorage.setItem("userData", JSON.stringify(userData))
+  localStorage.setItem("freeId", freeId)
 }
 
 class App extends Component {
@@ -69,7 +70,7 @@ class App extends Component {
       const usedIds = this.state.freeId
       const updatedList = prevState.userData
       updatedList.push(coffeeToAdd)
-      StoreUserData(updatedList)
+      StoreUserData(updatedList, usedIds + 1)
 
       return {
         userData: updatedList,
@@ -94,8 +95,10 @@ class App extends Component {
         if (localStorage.getItem("userData").length > 2){
           this.setState(() => {
             const dataFromLocal = JSON.parse(localStorage.getItem("userData"))
+            const freeIdFromLocal = parseInt(localStorage.getItem("freeId"))
             return {
-              userData: dataFromLocal
+              userData: dataFromLocal,
+              freeId: freeIdFromLocal
             }
           })
         }
